@@ -2,7 +2,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import * as crypto from 'crypto';
 
-const BOT_TOKEN = '8091835662:AAEKAnpUhu03V8zz8quh6qBVs5Pu4wiUwQw';
+const BOT_TOKEN = '';
 
 function checkTelegramAuth(data: any): boolean {
     const { hash, ...rest } = data;
