@@ -6,7 +6,7 @@ const TelegramLogin: React.FC = () => {
         <div>
             <script
                 async
-                src="https://telegram.org/js/telegram-widget.js?22"
+                src="https://telegram.org/js/telegram-widget.js?7"
                 data-telegram-login="TmaAuthBot"
                 data-size="large"
                 data-auth-url="/api/telegram"
