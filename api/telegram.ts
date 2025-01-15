@@ -15,7 +15,7 @@ function checkTelegramAuth(data: any): boolean {
     return hmac === hash;
 }
 
-export default (req: VercelRequest, res: VercelResponse) => {
+export default async (req: VercelRequest, res: VercelResponse) => {
     const authData = req.query;
 
     if (checkTelegramAuth(authData)) {
