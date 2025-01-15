@@ -2,7 +2,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto';
 
-const BOT_TOKEN = process.env.VITE_TOKEN;
+let BOT_TOKEN: string = process.env.VITE_TOKEN!;
 if(!BOT_TOKEN) {
     throw new Error('BOT_TOKEN is not defined');
 }
