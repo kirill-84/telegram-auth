@@ -33,19 +33,19 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       {!user ? (
-                <TelegramLogin onAuthSuccess={handleAuthSuccess} />
-            ) : (
-                <div>
-                    <h2>Welcome, {user.first_name}!</h2>
-                    {user.photo_url && (
-                        <img src={user.photo_url} alt={`${user.first_name}'s avatar`} />
-                    )}
-                    <p>ID: {user.id}</p>
-                    <p>First name: {user.first_name}</p>
-                    {user.last_name && <p>Last name: {user.last_name}</p>}
-                    {user.username && <p>Username: @{user.username}</p>}
-                </div>
-            )}
+        <TelegramLogin onAuthSuccess={handleAuthSuccess} />
+        ) : (
+        <div>
+          <h2>Welcome, {user.first_name}!</h2>
+          {user.photo_url && (
+            <img src={user.photo_url} alt={`${user.first_name}'s avatar`} />
+          )}
+          <p>ID: {user.id}</p>
+          <p>First name: {user.first_name}</p>
+          {user.last_name && <p>Last name: {user.last_name}</p>}
+          {user.username && <p>Username: @{user.username}</p>}
+        </div>
+      )}
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
