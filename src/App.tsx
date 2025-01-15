@@ -4,9 +4,22 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import TelegramLogin from "./components/TelegramLogin.tsx";
 
+interface TelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+}
+
 function App() {
   const [count, setCount] = useState(0)
+  const [user, setUser] = useState<TelegramUser | null>(null);
 
+    const handleAuthSuccess = (userData: TelegramUser) => {
+        setUser(userData); // Сохраняем данные пользователя в состоянии
+    };
+  
   return (
     <>
       <TelegramLogin />
@@ -19,7 +32,20 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      <p>{import.meta.env.VITE_API_KEY}</p>
+      {!user ? (
+                <TelegramLogin onAuthSuccess={handleAuthSuccess} />
+            ) : (
+                <div>
+                    <h2>Welcome, {user.first_name}!</h2>
+                    {user.photo_url && (
+                        <img src={user.photo_url} alt={`${user.first_name}'s avatar`} />
+                    )}
+                    <p>ID: {user.id}</p>
+                    <p>First name: {user.first_name}</p>
+                    {user.last_name && <p>Last name: {user.last_name}</p>}
+                    {user.username && <p>Username: @{user.username}</p>}
+                </div>
+            )}
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
