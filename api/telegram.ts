@@ -2,7 +2,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto'; // Изменено для совместимости с ES-модулями
 
-const BOT_TOKEN = process.env.VITE_TOKEN;
+const BOT_TOKEN = import.meta.env.VITE_TOKEN;
 
 function checkTelegramAuth(data: any): boolean {
     const { hash, ...rest } = data;
