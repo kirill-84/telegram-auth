@@ -2,20 +2,13 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto';
 
-//let BOT_TOKEN: string = process.env.VITE_TOKEN!;
-console.log('BOT_TOKEN:', process.env.VITE_TOKEN);
-const BOT_TOKEN = process.env.VITE_TOKEN;
-if(!BOT_TOKEN) {
-    throw new Error('BOT_TOKEN is not defined');
-}
-
 function checkTelegramAuth(data: any): boolean {
     const { hash, ...rest } = data;
     const checkString = Object.keys(rest)
         .sort()
         .map((key) => `${key}=${rest[key]}`)
         .join('\n');
-    const secretKey = crypto.createHash('sha256').update(BOT_TOKEN).digest();
+    const secretKey = crypto.createHash('sha256').update(process.env.VITE_TOKEN).digest();
     const hmac = crypto.createHmac('sha256', secretKey).update(checkString).digest('hex');
     return hmac === hash;
 }
