@@ -1,31 +1,30 @@
 // api/telegram.ts
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import CryptoJS from "crypto-js";
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import crypto from 'crypto';
 
-const VITE_TOKEN = "";
+const VITE_TOKEN = import.meta.env.VITE_TOKEN;
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "GET") {
-    res.status(405).send("Method Not Allowed");
-    return;
-  }
+if (!VITE_TOKEN) {
+    throw new Exception("VITE_TOKEN is not defined")
+}
 
-  const { hash, ...authData } = req.query;
+function checkTelegramAuth(data: any): boolean {
+    const { hash, ...rest } = data;
+    const checkString = Object.keys(rest)
+        .sort()
+        .map((key) => `${key}=${rest[key]}`)
+        .join('\n');
+    const secretKey = crypto.createHash('sha256').update(VITE_TOKEN).digest();
+    const hmac = crypto.createHmac('sha256', secretKey).update(checkString).digest('hex');
+    return hmac === hash;
+}
 
-  // 1. Генерация строки проверки данных
-  const dataCheckString = Object.keys(authData)
-    .sort()
-    .map((key) => `${key}=${authData[key]}`)
-    .join("\n");
+export default (req: VercelRequest, res: VercelResponse) => {
+    const authData = req.query;
 
-  // 2. Генерация HMAC-SHA-256 подписи
-  const secretKey = CryptoJS.SHA256(VITE_TOKEN).toString(CryptoJS.enc.Hex);
-  const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
-
-  // 3. Сравнение подписи с переданным хешем
-  if (hmac === hash) {
-    res.status(200).json({ success: true, authData });
-  } else {
-    res.status(401).json({ success: false, message: "Authentication failed" });
-  }
+    if (checkTelegramAuth(authData)) {
+        return res.json({ status: 'success', user: authData });
+    } else {
+        return res.status(403).json({ status: 'error', message: 'Invalid authentication' });
+    }
 }
