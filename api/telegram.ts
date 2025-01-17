@@ -8,7 +8,7 @@ function checkTelegramAuth(data: any): boolean {
         .sort()
         .map((key) => `${key}=${rest[key]}`)
         .join('\n');
-    const secretKey = crypto.createHash('sha256').update(process.env.API_TOKEN ?? "").digest();
+    const secretKey = crypto.createHash('sha256').update(process.env.VITE_TOKEN ?? "").digest();
     const hmac = crypto.createHmac('sha256', secretKey).update(checkString).digest('hex');
     return hmac === hash;
 }
