@@ -1,6 +1,6 @@
 // api/telegram.ts
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import CRYPTO from 'crypto';
+import crypto from 'crypto';
 
 const VITE_TOKEN = import.meta.env.VITE_TOKEN;
 
