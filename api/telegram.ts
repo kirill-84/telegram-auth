@@ -4,8 +4,8 @@ import crypto from 'crypto';
 
 const VITE_TOKEN = import.meta.env.VITE_TOKEN;
 
-if (!BOT_TOKEN) {
-    throw new Exception("BOT_TOKEN is not defined")
+if (!VITE_TOKEN) {
+    throw new Exception("VITE_TOKEN is not defined")
 }
 
 function checkTelegramAuth(data: any): boolean {
