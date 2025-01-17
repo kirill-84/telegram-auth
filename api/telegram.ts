@@ -2,7 +2,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import CryptoJS from "crypto-js";
 
-const BOT_TOKEN = "";
+const VITE_TOKEN = "";
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
@@ -19,7 +19,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     .join("\n");
 
   // 2. Генерация HMAC-SHA-256 подписи
-  const secretKey = CryptoJS.SHA256(BOT_TOKEN).toString(CryptoJS.enc.Hex);
+  const secretKey = CryptoJS.SHA256(VITE_TOKEN).toString(CryptoJS.enc.Hex);
   const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
 
   // 3. Сравнение подписи с переданным хешем
