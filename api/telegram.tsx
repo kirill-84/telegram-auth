@@ -1,73 +1,34 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import CryptoJS from "crypto-js";
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import crypto from 'crypto';
 
-const BOT_TOKEN = process.env.BOT_TOKEN as string;
+// Получаем токен из переменных окружения
+const BOT_TOKEN = process.env.BOT_TOKEN;
 
 if (!BOT_TOKEN) {
-  throw new Error("BOT_TOKEN is not defined in environment variables");
+    throw new Error('BOT_TOKEN is not defined in environment variables');
 }
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "GET") {
-    res.status(405).json({ success: false, message: "Method Not Allowed" });
-    return;
-  }
+function checkTelegramAuth(data: any): boolean {
+    const { hash, ...rest } = data;
 
-  try {
-    console.log("Received query:", req.query);
+    const checkString = Object.keys(rest)
+        .sort()
+        .map((key) => `${key}=${rest[key]}`)
+        .join('\n');
 
-    if (!req.query || Object.keys(req.query).length === 0) {
-      res.status(400).json({ success: false, message: "No query parameters provided" });
-      return;
-    }
+    // Используем BOT_TOKEN, который гарантированно является строкой
+    const secretKey = crypto.createHash('sha256').update(BOT_TOKEN).digest();
+    const hmac = crypto.createHmac('sha256', secretKey).update(checkString).digest('hex');
 
-    const hash = Array.isArray(req.query.hash) ? req.query.hash[0] : req.query.hash;
-    if (!hash) {
-      res.status(400).json({ success: false, message: "Missing 'hash' parameter" });
-      return;
-    }
+    return hmac === hash;
+}
 
-    const authData = Object.keys(req.query).reduce((acc, key) => {
-      if (key !== "hash") {
-        acc[key] = Array.isArray(req.query[key]) ? req.query[key][0] : req.query[key];
-      }
-      return acc;
-    }, {} as Record<string, string>);
+export default (req: VercelRequest, res: VercelResponse) => {
+    const authData = req.query;
 
-    console.log("Auth Data (raw):", authData);
-
-    const authDataNormalized = Object.keys(authData).reduce((acc, key) => {
-      acc[key.toLowerCase()] = authData[key];
-      return acc;
-    }, {} as Record<string, string>);
-
-    console.log("Auth Data (normalized):", authDataNormalized);
-
-    const dataCheckString = Object.keys(authDataNormalized)
-      .sort()
-      .map((key) => `${key}=${authDataNormalized[key]}`)
-      .join("\n");
-
-    console.log("Data Check String:", dataCheckString);
-
-    const secretKey = CryptoJS.SHA256(BOT_TOKEN).toString(CryptoJS.enc.Hex);
-    console.log("Secret Key:", secretKey);
-
-    const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
-    console.log("Computed HMAC:", hmac);
-    console.log("Provided Hash:", hash);
-
-    if (hmac === hash) {
-      const responseData = { success: true, authData: authDataNormalized };
-      console.log("Authentication successful:", responseData);
-      res.status(200).json(responseData);
+    if (checkTelegramAuth(authData)) {
+        return res.json({ status: 'success', user: authData });
     } else {
-      console.log("Authentication failed. Computed HMAC does not match provided hash.");
-      res.status(401).json({ success: false, message: "Authentication failed. Try again." });
+        return res.status(403).json({ status: 'error', message: 'Invalid authentication' });
     }
-  } catch (err) {
-    console.error("Error during authentication:", err);
-    const error = err instanceof Error ? err : new Error("Unknown error occurred");
-    res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
-  }
-}
+};
