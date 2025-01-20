@@ -1,4 +1,3 @@
-// src/components/TelegramLogin.tsx
 import React, { useEffect, useState } from 'react';
 
 const TelegramLogin: React.FC = () => {
@@ -9,7 +8,7 @@ const TelegramLogin: React.FC = () => {
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
-    script.setAttribute('data-telegram-login', 'TmaAuthBot');
+    script.setAttribute('data-telegram-login', 'TmaAuthBot'); // Название вашего бота
     script.setAttribute('data-size', 'large');
     script.setAttribute('data-auth-url', '/api/telegram');
     script.setAttribute('data-request-access', 'write');
