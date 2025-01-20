@@ -14,7 +14,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    console.log('Received request:', req.query);  // Логирование запроса
+    console.log("Received request:", req.query); // Логирование запроса
 
     // Проверка наличия query параметров
     if (!req.query || Object.keys(req.query).length === 0) {
@@ -38,7 +38,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     // Генерация строки проверки данных
     const dataCheckString = Object.keys(authData)
       .sort()
-      .map((key) => `${key}=${authData[key]}`)
+      .map((key) => `${key}=${authData[key]}`) // Исправление синтаксиса
       .join("\n");
 
     // Генерация HMAC-SHA-256 подписи
@@ -48,15 +48,15 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     // Сравнение подписи с переданным хешем
     if (hmac === hash) {
       const responseData = { success: true, authData };
-      console.log('Authentication successful. Sending response:', responseData);
+      console.log("Authentication successful. Sending response:", responseData);
       res.status(200).json(responseData);
     } else {
-      const errorResponse = { success: false, message: 'Authentication failed. Try again.' };
-      console.log('Authentication failed. Sending response:', errorResponse);
+      const errorResponse = { success: false, message: "Authentication failed. Try again." };
+      console.log("Authentication failed. Sending response:", errorResponse);
       res.status(401).json(errorResponse);
     }
   } catch (err) {
-    console.error('Error during authentication:', err);  // Логирование ошибки
+    console.error("Error during authentication:", err); // Логирование ошибки
     // Приведение err к типу Error
     const error = err instanceof Error ? err : new Error("Unknown error occurred");
     res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
