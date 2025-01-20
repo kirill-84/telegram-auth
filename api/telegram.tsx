@@ -51,7 +51,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       console.log('Authentication successful. Sending response:', responseData);
       res.status(200).json(responseData);
     } else {
-      const errorResponse = { success: false, message: 'Authentication failed' };
+      const errorResponse = { success: false, message: 'Authentication failed. Try again.' };
       console.log('Authentication failed. Sending response:', errorResponse);
       res.status(401).json(errorResponse);
     }
