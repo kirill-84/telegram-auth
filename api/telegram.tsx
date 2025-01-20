@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
 
-const BOT_TOKEN = process.env.BOT_TOKEN; // Удаляем возможные лишние символы
+const BOT_TOKEN = process.env.BOT_TOKEN?.trim();
 if (!BOT_TOKEN) {
   throw new Error("BOT_TOKEN is not defined in environment variables");
 }
@@ -36,23 +36,31 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     console.log("Auth Data:", authData);
 
     const dataCheckString = Object.keys(authData)
-      .sort() // Сортируем ключи по алфавиту
-      .map((key) => `${key}=${authData[key]}`) // Формат key=value
+      .sort()
+      .map((key) => `${key}=${authData[key]}`)
       .join("\n");
 
-    console.log("Data Check String:", JSON.stringify(dataCheckString));
+    console.log("Data Check String (Raw Output):", dataCheckString);
+    console.log("Data Check String (UTF-8 Encoded):", Buffer.from(dataCheckString, 'utf-8'));
 
-    // Генерация HMAC-SHA-256
-    const hmac = crypto
-      .createHmac("sha256", BOT_TOKEN) // Используем токен как есть
-      .update(dataCheckString, "utf8") // Кодировка UTF-8
-      .digest("hex");
+    console.log("BOT_TOKEN (raw):", BOT_TOKEN);
+    console.log("BOT_TOKEN (Buffer view):", Buffer.from(BOT_TOKEN, "utf-8"));
 
-    console.log("Computed HMAC:", hmac);
-    console.log("Provided Hash:", hash);
+    const hmacBuffer = crypto
+      .createHmac("sha256", BOT_TOKEN)
+      .update(dataCheckString, "utf-8")
+      .digest();
+    console.log("HMAC Buffer:", hmacBuffer);
+    console.log("HMAC Buffer Hex:", hmacBuffer.toString("hex"));
 
-    // Сравниваем HMAC с переданным хешем
-    if (hmac === hash) {
+    const providedHashBuffer = Buffer.from(hash, "hex");
+    console.log("Provided Hash Buffer:", providedHashBuffer);
+
+    for (let i = 0; i < hmacBuffer.length; i++) {
+      console.log(`Byte ${i}: HMAC=${hmacBuffer[i]} Provided Hash=${providedHashBuffer[i]}`);
+    }
+
+    if (hmacBuffer.toString("hex") === hash) {
       res.status(200).json({ success: true, authData });
     } else {
       res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
