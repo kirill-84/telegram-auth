@@ -14,7 +14,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     console.log("Received query:", req.query);
-    console.log("BOT_TOKEN:", JSON.stringify(BOT_TOKEN));
+    console.log("BOT_TOKEN (raw):", JSON.stringify(BOT_TOKEN));
+    console.log("BOT_TOKEN (bytes):", Buffer.from(BOT_TOKEN, "utf8"));
 
     if (!req.query || Object.keys(req.query).length === 0) {
       res.status(400).json({ success: false, message: "No query parameters provided" });
