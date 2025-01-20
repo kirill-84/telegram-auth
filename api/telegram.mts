@@ -14,6 +14,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    console.log('Received request:', req.query);  // Логирование запроса
+
     // Проверка наличия query параметров
     if (!req.query || Object.keys(req.query).length === 0) {
       res.status(400).json({ success: false, message: "No query parameters provided" });
@@ -45,11 +47,16 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     // Сравнение подписи с переданным хешем
     if (hmac === hash) {
-      res.status(200).json({ success: true, authData });
+      const responseData = { success: true, authData };
+      console.log('Authentication successful. Sending response:', responseData);
+      res.status(200).json(responseData);
     } else {
-      res.status(401).json({ success: false, message: "Authentication failed" });
+      const errorResponse = { success: false, message: 'Authentication failed' };
+      console.log('Authentication failed. Sending response:', errorResponse);
+      res.status(401).json(errorResponse);
     }
   } catch (err) {
+    console.error('Error during authentication:', err);  // Логирование ошибки
     // Приведение err к типу Error
     const error = err instanceof Error ? err : new Error("Unknown error occurred");
     res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
