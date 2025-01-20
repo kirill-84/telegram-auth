@@ -2,7 +2,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import CryptoJS from "crypto-js";
 
-const VITE_TOKEN = "";
+const VITE_TOKEN = process.env.VITE_TOKEN;
+if(!VITE_TOKEN) {
+  throw new Error("VITE_TOKEN is not defined in environment variables.");
+}
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
