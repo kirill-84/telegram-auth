@@ -17,31 +17,37 @@ const TelegramLogin: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Получаем данные пользователя после успешной авторизации
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch('/api/telegram'); // Запрос на ваш API
-        console.log('API response:', response);
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Parsed data:', data);
-          if (data.success) {
-            setUserData(data.authData); // Устанавливаем данные пользователя в состояние
-          } else {
-            setError('Authentication failed'); // Если аутентификация не удалась
-          }
-        } else {
-          setError('Failed to fetch user data');
-        }
-      } catch (err) {
-        setError('An error occurred while fetching user data');
-        console.error('Fetch error:', err);
+  // Получаем данные пользователя после успешной авторизации  
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch('/api/telegram'); // Запрос на ваш API
+      console.log('API response:', response); // Логирование ответа от API
+
+      // Проверка, если ответ не OK
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response body:', errorText);
+        setError('Failed to fetch user data');
+        return;
       }
-    };
 
-    fetchUserData();
-  }, []);
+      const data = await response.json();
+      console.log('Parsed data:', data); // Логирование разобранных данных
 
+      if (data.success) {
+        setUserData(data.authData); // Устанавливаем данные пользователя в состояние
+      } else {
+        setError('Authentication failed'); // Если аутентификация не удалась
+      }
+    } catch (err) {
+      setError('An error occurred while fetching user data');
+      console.error('Fetch error:', err); // Логирование ошибки при fetch
+    }
+  };
+
+  fetchUserData();
+}, []);
+  
   return (
     <div>
       <div id="telegram-login-container"></div> {/* Вставка виджета Telegram */}
