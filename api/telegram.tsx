@@ -26,6 +26,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    // Извлечение auth_data
     const authData = Object.keys(req.query).reduce((acc, key) => {
       if (key !== "hash") {
         acc[key] = Array.isArray(req.query[key]) ? req.query[key][0] : req.query[key];
@@ -35,6 +36,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log("Auth Data:", authData);
 
+    // Генерация строки проверки данных
     const dataCheckString = Object.keys(authData)
       .sort()
       .map((key) => `${key}=${authData[key]}`)
@@ -42,8 +44,10 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log("Data Check String:", dataCheckString);
 
-    // Используем BOT_TOKEN напрямую как секретный ключ (без Hex-преобразования)
-    const hmac = CryptoJS.HmacSHA256(dataCheckString, BOT_TOKEN).toString(CryptoJS.enc.Hex);
+    // Генерация HMAC-SHA-256
+    const secretKey = CryptoJS.enc.Utf8.parse(BOT_TOKEN); // Преобразуем BOT_TOKEN в WordArray
+    const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
+
     console.log("Computed HMAC:", hmac);
     console.log("Provided Hash:", hash);
 
