@@ -28,9 +28,5 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     const authData = req.query;
 
-    if (checkTelegramAuth(authData)) {
-        return res.status(200).json({ status: 'success', user: authData });
-    } else {
-        return res.status(403).json({ status: 'error', message: 'Invalid authentication' });
-    }
+    console.log('AuthData:', authData);
 }
