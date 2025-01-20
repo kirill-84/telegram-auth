@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
 
-const BOT_TOKEN = process.env.BOT_TOKEN as string;
+const BOT_TOKEN = process.env.BOT_TOKEN?.trim(); // Удаляем возможные лишние символы
 if (!BOT_TOKEN) {
   throw new Error("BOT_TOKEN is not defined in environment variables");
 }
@@ -14,8 +14,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     console.log("Received query:", req.query);
-    console.log("BOT_TOKEN (raw):", JSON.stringify(BOT_TOKEN));
-    console.log("BOT_TOKEN (bytes):", Buffer.from(BOT_TOKEN, "utf8"));
 
     if (!req.query || Object.keys(req.query).length === 0) {
       res.status(400).json({ success: false, message: "No query parameters provided" });
@@ -37,7 +35,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log("Auth Data:", authData);
 
-    // Формируем строку проверки данных
     const dataCheckString = Object.keys(authData)
       .sort() // Сортируем ключи по алфавиту
       .map((key) => `${key}=${authData[key]}`) // Формат key=value
@@ -48,12 +45,13 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     // Генерация HMAC-SHA-256
     const hmac = crypto
       .createHmac("sha256", BOT_TOKEN) // Используем токен как есть
-      .update(Buffer.from(dataCheckString, "utf8")) // Обрабатываем строку в кодировке UTF-8
+      .update(dataCheckString, "utf8") // Кодировка UTF-8
       .digest("hex");
 
     console.log("Computed HMAC:", hmac);
     console.log("Provided Hash:", hash);
 
+    // Сравниваем HMAC с переданным хешем
     if (hmac === hash) {
       res.status(200).json({ success: true, authData });
     } else {
