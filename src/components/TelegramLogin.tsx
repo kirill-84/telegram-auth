@@ -21,8 +21,10 @@ const TelegramLogin: React.FC = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch('/api/telegram'); // Запрос на ваш API
+        console.log('API response:', response);
         if (response.ok) {
           const data = await response.json();
+          console.log('Parsed data:', data);
           if (data.success) {
             setUserData(data.authData); // Устанавливаем данные пользователя в состояние
           } else {
@@ -33,6 +35,7 @@ const TelegramLogin: React.FC = () => {
         }
       } catch (err) {
         setError('An error occurred while fetching user data');
+        console.error('Fetch error:', err);
       }
     };
 
