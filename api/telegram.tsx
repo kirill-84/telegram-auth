@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import CryptoJS from "crypto-js";
-import * as crypto from "crypto";
 
 const BOT_TOKEN = process.env.BOT_TOKEN as string;
 if (!BOT_TOKEN) {
@@ -21,31 +20,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const encoded = decodeURIComponent(req.query);
-  
-  
-  // HMAC-SHA-256 signature of the bot's token with the constant string WebAppData used as a key.
-  const secret = crypto
-    .createHmac('sha256', 'WebAppData')
-    .update(BOT_TOKEN);
-
-  // Data-check-string is a chain of all received fields'.
-  const arr = encoded.split('&');
-  const hashIndex = arr.findIndex(str => str.startsWith('hash='));
-  const hash = arr.splice(hashIndex)[0].split('=')[1];
-  // sorted alphabetically
-  arr.sort((a, b) => a.localeCompare(b));
-  // in the format key=<value> with a line feed character ('\n', 0x0A) used as separator
-  // e.g., 'auth_date=<auth_date>\nquery_id=<query_id>\nuser=<user>
-  const dataCheckString = arr.join('\n');
-  
-  // The hexadecimal representation of the HMAC-SHA-256 signature of the data-check-string with the secret key
-  const _hash = crypto
-    .createHmac('sha256', secret.digest())
-    .update(dataCheckString)
-    .digest('hex');
-
-    /*const hash = Array.isArray(req.query.hash) ? req.query.hash[0] : req.query.hash;
+    const hash = Array.isArray(req.query.hash) ? req.query.hash[0] : req.query.hash;
     if (!hash) {
       res.status(400).json({ success: false, message: "Missing 'hash' parameter" });
       return;
@@ -74,10 +49,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     console.log("Computed HMAC:", hmac);
     console.log("Provided Hash:", hash);
 
-    if (hmac === hash) {*/
-    if (_hash === hash) {
-      /*const responseData = { success: true, authData };*/
-      const responseData = { success: true, dataCheckString };
+    if (hmac === hash) {
+      const responseData = { success: true, authData };
       console.log("Authentication successful. Sending response:", responseData);
       res.status(200).json(responseData);
     } else {
