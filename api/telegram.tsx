@@ -45,7 +45,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     const secretKey = CryptoJS.SHA256(BOT_TOKEN).toString(CryptoJS.enc.Hex);
     console.log("Secret Key (hashed token):", secretKey);
 
-    console.log("BOT TOKEN:", BOT_TOKEN);
     const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
     console.log("Computed HMAC:", hmac);
     console.log("Provided Hash:", hash);
