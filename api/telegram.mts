@@ -16,6 +16,10 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   try {
     console.log('Received request:', req.query);  // Логирование запроса
 
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
     // Проверка наличия query параметров
     if (!req.query || Object.keys(req.query).length === 0) {
       res.status(400).json({ success: false, message: "No query parameters provided" });
