@@ -2,9 +2,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import CryptoJS from "crypto-js";
 
 // Получение токена бота из переменных окружения
-const VITE_TOKEN = process.env.VITE_TOKEN as string; // Явное утверждение, что VITE_TOKEN — строка
-if (!VITE_TOKEN) {
-  throw new Error("VITE_TOKEN is not defined in environment variables");
+const BOT_TOKEN = process.env.BOT_TOKEN as string; // Явное утверждение, что BOT_TOKEN — строка
+if (!BOT_TOKEN) {
+  throw new Error("BOT_TOKEN is not defined in environment variables");
 }
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
@@ -40,7 +40,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       .join("\n");
 
     // Генерация HMAC-SHA-256 подписи
-    const secretKey = CryptoJS.SHA256(VITE_TOKEN).toString(CryptoJS.enc.Hex);
+    const secretKey = CryptoJS.SHA256(BOT_TOKEN).toString(CryptoJS.enc.Hex);
     const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
 
     // Сравнение подписи с переданным хешем
