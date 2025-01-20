@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import CryptoJS from "crypto-js";
 
 const BOT_TOKEN = process.env.BOT_TOKEN as string;
+
 if (!BOT_TOKEN) {
   throw new Error("BOT_TOKEN is not defined in environment variables");
 }
@@ -13,7 +14,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    console.log("Received request:", req.query);
+    console.log("Received query:", req.query);
 
     if (!req.query || Object.keys(req.query).length === 0) {
       res.status(400).json({ success: false, message: "No query parameters provided" });
@@ -33,30 +34,36 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       return acc;
     }, {} as Record<string, string>);
 
-    console.log("Auth Data:", authData);
+    console.log("Auth Data (raw):", authData);
 
-    const dataCheckString = Object.keys(authData)
+    const authDataNormalized = Object.keys(authData).reduce((acc, key) => {
+      acc[key.toLowerCase()] = authData[key];
+      return acc;
+    }, {} as Record<string, string>);
+
+    console.log("Auth Data (normalized):", authDataNormalized);
+
+    const dataCheckString = Object.keys(authDataNormalized)
       .sort()
-      .map((key) => `${key}=${authData[key]}`)
+      .map((key) => `${key}=${authDataNormalized[key]}`)
       .join("\n");
 
     console.log("Data Check String:", dataCheckString);
 
     const secretKey = CryptoJS.SHA256(BOT_TOKEN).toString(CryptoJS.enc.Hex);
-    console.log("Secret Key (hashed token):", secretKey);
+    console.log("Secret Key:", secretKey);
 
     const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
     console.log("Computed HMAC:", hmac);
     console.log("Provided Hash:", hash);
 
     if (hmac === hash) {
-      const responseData = { success: true, authData };
-      console.log("Authentication successful. Sending response:", responseData);
+      const responseData = { success: true, authData: authDataNormalized };
+      console.log("Authentication successful:", responseData);
       res.status(200).json(responseData);
     } else {
-      const errorResponse = { success: false, message: "Authentication failed. Try again." };
-      console.log("Authentication failed. Sending response:", errorResponse);
-      res.status(401).json(errorResponse);
+      console.log("Authentication failed. Computed HMAC does not match provided hash.");
+      res.status(401).json({ success: false, message: "Authentication failed. Try again." });
     }
   } catch (err) {
     console.error("Error during authentication:", err);
