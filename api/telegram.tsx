@@ -10,7 +10,19 @@ if (!BOT_TOKEN) {
 
 // Функция для проверки хэша Telegram
 function checkTelegramAuth(data: any): boolean {
-    const { hash, ...rest } = data;
+    const hash = Array.isArray(req.query.hash) ? req.query.hash[0] : req.query.hash;
+    if (!hash) {
+      res.status(400).json({ success: false, message: "Missing 'hash' parameter" });
+      return;
+    }
+
+    const rest = Object.keys(req.query).reduce((acc, key) => {
+      if (key !== "hash") {
+        acc[key] = Array.isArray(req.query[key]) ? req.query[key][0] : req.query[key];
+      }
+      return acc;
+    }, {} as Record<string, string>);
+    
     const checkString = Object.keys(rest)
         .sort()
         .map(key => `${key}=${rest[key]}`)
