@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import CryptoJS from "crypto-js";
 
 // Получение токена бота из переменных окружения
-const VITE_TOKEN = process.env.VITE_TOKEN;
+const VITE_TOKEN = process.env.VITE_TOKEN as string; // Явное утверждение, что VITE_TOKEN — строка
 if (!VITE_TOKEN) {
   throw new Error("VITE_TOKEN is not defined in environment variables");
 }
@@ -40,7 +40,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       .join("\n");
 
     // Генерация HMAC-SHA-256 подписи
-    const secretKey = CryptoJS.SHA256(VITE_TOKEN).toString(CryptoJS.enc.Hex); // VITE_TOKEN гарантированно строка
+    const secretKey = CryptoJS.SHA256(VITE_TOKEN).toString(CryptoJS.enc.Hex);
     const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
 
     // Сравнение подписи с переданным хешем
@@ -49,7 +49,9 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     } else {
       res.status(401).json({ success: false, message: "Authentication failed" });
     }
-  } catch (error) {
+  } catch (err) {
+    // Приведение err к типу Error
+    const error = err instanceof Error ? err : new Error("Unknown error occurred");
     res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
   }
 }
