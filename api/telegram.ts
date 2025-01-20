@@ -8,20 +8,18 @@ if (!VITE_TOKEN) {
 }
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  // Ограничиваем только GET-запросы
   if (req.method !== "GET") {
     res.status(405).json({ success: false, message: "Method Not Allowed" });
     return;
   }
 
   try {
-    // Проверяем наличие параметров запроса
+    // Проверка наличия query параметров
     if (!req.query || Object.keys(req.query).length === 0) {
       res.status(400).json({ success: false, message: "No query parameters provided" });
       return;
     }
 
-    // Извлечение hash и authData из запроса
     const hash = Array.isArray(req.query.hash) ? req.query.hash[0] : req.query.hash;
     if (!hash) {
       res.status(400).json({ success: false, message: "Missing 'hash' parameter" });
@@ -42,7 +40,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       .join("\n");
 
     // Генерация HMAC-SHA-256 подписи
-    const secretKey = CryptoJS.SHA256(VITE_TOKEN).toString(CryptoJS.enc.Hex);
+    const secretKey = CryptoJS.SHA256(VITE_TOKEN).toString(CryptoJS.enc.Hex); // VITE_TOKEN гарантированно строка
     const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
 
     // Сравнение подписи с переданным хешем
@@ -52,7 +50,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       res.status(401).json({ success: false, message: "Authentication failed" });
     }
   } catch (error) {
-    // Обработка любых неожиданных ошибок
     res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
   }
 }
