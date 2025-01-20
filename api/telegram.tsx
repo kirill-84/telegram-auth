@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import CryptoJS from "crypto-js";
-import crypto from "crypto";
 
 const BOT_TOKEN = process.env.BOT_TOKEN as string;
 if (!BOT_TOKEN) {
@@ -76,7 +75,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     if (hmac === hash) {*/
     if (_hash === hash) {
-      const responseData = { success: true, authData };
+      /*const responseData = { success: true, authData };*/
+      const responseData = { success: true, dataCheckString };
       console.log("Authentication successful. Sending response:", responseData);
       res.status(200).json(responseData);
     } else {
