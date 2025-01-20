@@ -47,16 +47,18 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     console.log("BOT_TOKEN (raw):", BOT_TOKEN);
     console.log("Data Check String (raw):", dataCheckString);
 
-    // Генерация HMAC-SHA-256 с использованием Buffer
-    const hmac = crypto
-      .createHmac("sha256", Buffer.from(BOT_TOKEN, "utf8")) // Токен как бинарный буфер
-      .update(dataCheckString, "utf8") // Строка проверки данных в кодировке UTF-8
-      .digest("hex");
+    // Генерация HMAC
+    const hmacBuffer = crypto
+      .createHmac("sha256", BOT_TOKEN)
+      .update(dataCheckString, "utf-8")
+      .digest();
 
-    console.log("Computed HMAC:", hmac);
+    // Выводим HMAC в hex формате для сравнения
+    const computedHmac = hmacBuffer.toString("hex");
+    console.log("Computed HMAC:", computedHmac);
     console.log("Provided Hash:", hash);
 
-    if (hmac === hash) {
+    if (computedHmac === hash) {
       res.status(200).json({ success: true, authData });
     } else {
       res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
