@@ -56,10 +56,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     const providedHashBuffer = Buffer.from(hash, "hex");
     console.log("Provided Hash Buffer:", providedHashBuffer);
 
-    for (let i = 0; i < hmacBuffer.length; i++) {
-      console.log(`Byte ${i}: HMAC=${hmacBuffer[i]} Provided Hash=${providedHashBuffer[i]}`);
-    }
-
     if (hmacBuffer.toString("hex") === hash) {
       res.status(200).json({ success: true, authData });
     } else {
