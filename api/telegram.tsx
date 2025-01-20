@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import CryptoJS from "crypto-js";
+import * as crypto from "crypto";
 
 const BOT_TOKEN = process.env.BOT_TOKEN as string;
 if (!BOT_TOKEN) {
