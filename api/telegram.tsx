@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import CryptoJS from "crypto-js";
+import crypto from "crypto";
 
 const BOT_TOKEN = process.env.BOT_TOKEN as string;
 if (!BOT_TOKEN) {
@@ -26,6 +26,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    // Извлечение данных без параметра "hash"
     const authData = Object.keys(req.query).reduce((acc, key) => {
       if (key !== "hash") {
         acc[key] = Array.isArray(req.query[key]) ? req.query[key][0] : req.query[key];
@@ -35,17 +36,19 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log("Auth Data:", authData);
 
-    // Создание строки проверки данных
+    // Формируем строку проверки данных
     const dataCheckString = Object.keys(authData)
-      .sort() // Сортируем ключи
+      .sort() // Сортируем ключи по алфавиту
       .map((key) => `${key}=${authData[key]}`) // Формат key=value
-      .join("\n"); // Разделяем строку \n
+      .join("\n");
 
     console.log("Data Check String:", dataCheckString);
 
-    // Используем токен напрямую для генерации HMAC
-    const secretKey = CryptoJS.enc.Utf8.parse(BOT_TOKEN);
-    const hmac = CryptoJS.HmacSHA256(dataCheckString, secretKey).toString(CryptoJS.enc.Hex);
+    // Генерация HMAC-SHA-256 с использованием Node.js crypto
+    const hmac = crypto
+      .createHmac("sha256", BOT_TOKEN) // Используем токен как секретный ключ
+      .update(dataCheckString) // Добавляем строку проверки данных
+      .digest("hex"); // Преобразуем в hex
 
     console.log("Computed HMAC:", hmac);
     console.log("Provided Hash:", hash);
