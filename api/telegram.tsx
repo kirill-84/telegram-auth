@@ -35,17 +35,36 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log("Auth Data:", authData);
 
-    const dataCheckString = Object.keys(authData)
+    /*const dataCheckString = Object.keys(authData)
       .sort() // Сортируем ключи по алфавиту
       .map((key) => `${key}=${authData[key]}`) // Формат key=value
-      .join("\n");
+      .join("\n");*/
+
+    const keys = Array.from(authData.keys()).sort();
+
+  const dataCheckStrings = [];
+    keys.forEach(key => 
+    {
+      if (key !== 'hash') 
+      {
+        let value = initData[key];
+
+      if (typeof value === 'object')
+      {
+         value = JSON.stringify(value);
+      }
+
+      dataCheckStrings.push(`${key}=${value}`);
+    }
+  });
+  const dataCheckString = dataCheckStrings.join('\n');
 
     console.log("Data Check String:", JSON.stringify(dataCheckString));
 
     // Генерация HMAC-SHA-256
     const hmac = crypto
       .createHmac("sha256", BOT_TOKEN) // Используем токен как есть
-      .update(JSON.stringify(dataCheckString), "utf8") // Кодировка UTF-8
+      .update(dataCheckString, "utf8") // Кодировка UTF-8
       .digest("hex");
 
     console.log("Computed HMAC:", hmac);
