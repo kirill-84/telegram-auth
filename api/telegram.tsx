@@ -1,75 +1,65 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
 
-// Токен бота (не забудьте заменить на ваш токен)
-const BOT_TOKEN = process.env.BOT_TOKEN as string;
-
+const BOT_TOKEN = process.env.BOT_TOKEN?.trim(); // Удаляем возможные лишние символы
 if (!BOT_TOKEN) {
   throw new Error("BOT_TOKEN is not defined in environment variables");
 }
 
-// Функция для проверки авторизации
-function checkTelegramAuthorization(authData: Record<string, string>) {
-  const checkHash = authData.hash;
-  delete authData.hash;
-
-  // Составляем строку для проверки
-  const dataCheckArr: string[] = [];
-  for (const [key, value] of Object.entries(authData)) {
-    dataCheckArr.push(`${key}=${value}`);
-  }
-
-  // Сортируем и соединяем в строку
-  dataCheckArr.sort();
-  const dataCheckString = dataCheckArr.join("\n");
-
-  // Генерация секретного ключа
-  const secretKey = crypto.createHash('sha256').update(BOT_TOKEN, 'utf-8').digest();
-
-  // Генерация HMAC
-  const hash = crypto.createHmac('sha256', secretKey)
-                     .update(dataCheckString, 'utf-8')
-                     .digest('hex');
-
-  // Сравниваем хеши
-  if (hash !== checkHash) {
-    throw new Error('Data is NOT from Telegram');
-  }
-
-  // Проверка на актуальность данных
-  const authDate = parseInt(authData.auth_date, 10);
-  if (Date.now() / 1000 - authDate > 86400) {
-    throw new Error('Data is outdated');
-  }
-
-  return authData;
-}
-
-// Функция для сохранения данных пользователя Telegram (например, в cookies)
-function saveTelegramUserData(authData: Record<string, string>, res: VercelResponse) {
-  const authDataJson = JSON.stringify(authData);
-  res.setHeader('Set-Cookie', `tg_user=${authDataJson}; Path=/; HttpOnly;`);
-}
-
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
-    return res.status(405).json({ success: false, message: "Method Not Allowed" });
+    res.status(405).json({ success: false, message: "Method Not Allowed" });
+    return;
   }
 
   try {
-    const authData: Record<string, string> = req.query as Record<string, string>;
+    console.log("Received query:", req.query);
 
-    // Проверка авторизации
-    const validatedData = checkTelegramAuthorization(authData);
+    if (!req.query || Object.keys(req.query).length === 0) {
+      res.status(400).json({ success: false, message: "No query parameters provided" });
+      return;
+    }
 
-    // Сохранение данных пользователя
-    saveTelegramUserData(validatedData, res);
+    const hash = Array.isArray(req.query.hash) ? req.query.hash[0] : req.query.hash;
+    if (!hash) {
+      res.status(400).json({ success: false, message: "Missing 'hash' parameter" });
+      return;
+    }
 
-    // Ответ
-    res.status(200).json({ success: true, message: "Authorization successful", authData: validatedData });
+    const authData = Object.keys(req.query).reduce((acc, key) => {
+      if (key !== "hash") {
+        acc[key] = Array.isArray(req.query[key]) ? req.query[key][0] : req.query[key];
+      }
+      return acc;
+    }, {} as Record<string, string>);
+
+    console.log("Auth Data:", authData);
+
+    const dataCheckString = Object.keys(authData)
+      .sort() // Сортируем ключи по алфавиту
+      .map((key) => `${key}=${authData[key]}`) // Формат key=value
+      .join("\n");
+
+    console.log("Data Check String:", JSON.stringify(dataCheckString));
+
+    // Генерация HMAC-SHA-256
+    const hmac = crypto
+      .createHmac("sha256", BOT_TOKEN) // Используем токен как есть
+      .update(dataCheckString, "utf8") // Кодировка UTF-8
+      .digest("hex");
+
+    console.log("Computed HMAC:", hmac);
+    console.log("Provided Hash:", hash);
+
+    // Сравниваем HMAC с переданным хешем
+    if (hmac === hash) {
+      res.status(200).json({ success: true, authData });
+    } else {
+      res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
+    }
   } catch (err) {
     console.error("Error during authentication:", err);
     const error = err instanceof Error ? err : new Error("Unknown error occurred");
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
   }
 }
