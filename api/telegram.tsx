@@ -58,7 +58,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   // Объединяем строки с разделителем '\n'
   return dataCheckStrings.join('\n');
 };
-    const dataCheckString = dataCheckStrings(authData);
+    const dataCheckString = dataCheckStrings;
 
     console.log("Data Check String:", dataCheckString);
 
