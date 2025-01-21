@@ -40,7 +40,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       .map((key) => `${key}=${authData[key]}`) // Формат key=value
       .join("\n");*/
 
-    const keys = Array.from(authData.keys()).sort();
+    const keys = Object.keys(authData).sort();
 
     const dataCheckStrings: string[] = [];
     keys.forEach((key) => {
