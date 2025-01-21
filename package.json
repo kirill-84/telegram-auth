@@ -15,6 +15,13 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
+  "keywords": [
+    "Telegram",
+    "Checking",
+    "Authorization",
+    "Crypto",
+    "SHA256"
+  ],
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/react": "^18.3.18",
