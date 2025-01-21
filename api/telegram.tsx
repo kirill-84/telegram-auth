@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
 
-const BOT_TOKEN = process.env.BOT_TOKEN?.trim(); // Удаляем возможные лишние символы
+const BOT_TOKEN = process.env.BOT_TOKEN as string; // Удаляем возможные лишние символы
 if (!BOT_TOKEN) {
   throw new Error("BOT_TOKEN is not defined in environment variables");
 }
