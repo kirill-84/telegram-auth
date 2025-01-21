@@ -40,26 +40,27 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       .map((key) => `${key}=${authData[key]}`) // Формат key=value
       .join("\n");*/
 
-    const keys = Array.from(authData.keys()).sort();
+    const processAuthData = (authData: Map<string, any>): string => {
+  // Получение ключей и их сортировка
+  const keys = Array.from(authData.keys()).sort();
 
-  const dataCheckStrings = [];
-    keys.forEach(key => 
-    {
-      if (key !== 'hash') 
-      {
-        let value = initData[key];
+  // Формирование массива строк "key=value"
+  const dataCheckStrings: string[] = keys.map((key) => {
+    let value = authData.get(key);
 
-      if (typeof value === 'object')
-      {
-         value = JSON.stringify(value);
-      }
-
-      dataCheckStrings.push(`${key}=${value}`);
+    if (typeof value === 'object') {
+      value = JSON.stringify(value); // Преобразуем объекты в строку
     }
-  });
-  const dataCheckString = dataCheckStrings.join('\n');
 
-    console.log("Data Check String:", JSON.stringify(dataCheckString));
+    return ${key}=${value};
+  });
+
+  // Объединяем строки с разделителем '\n'
+  return dataCheckStrings.join('\n');
+};
+    const dataCheckString = dataCheckStrings(authData);
+
+    console.log("Data Check String:", dataCheckString);
 
     // Генерация HMAC-SHA-256
     const hmac = crypto
