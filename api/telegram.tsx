@@ -45,7 +45,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     // Генерация HMAC-SHA-256
     const hmac = crypto
       .createHmac("sha256", BOT_TOKEN) // Используем токен как есть
-      .update(dataCheckString, "utf8") // Кодировка UTF-8
+      .update(JSON.stringify(dataCheckString), "utf8") // Кодировка UTF-8
       .digest("hex");
 
     console.log("Computed HMAC:", hmac);
