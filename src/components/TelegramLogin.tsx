@@ -36,6 +36,9 @@ const TelegramLogin: React.FC = () => {
   };
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryData = Object.fromEntries(urlParams.entries());
+    console.log(queryData);
     fetchUserData(); // Вызов функции для получения данных
   }, []);
 
