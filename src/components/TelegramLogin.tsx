@@ -23,7 +23,6 @@ const TelegramLogin: React.FC = () => {
         throw new Error('Failed to fetch user data');
       }
       const data = await response.json();
-      console.log('Data:', data.authData);
       if (data.success) {
         setUserData(data.authData); // Получаем данные пользователя
       } else {
@@ -38,7 +37,7 @@ const TelegramLogin: React.FC = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const queryData = Object.fromEntries(urlParams.entries());
-    console.log(queryData);
+    console.log('QueryData:', queryData);
     fetchUserData(); // Вызов функции для получения данных
   }, []);
 
