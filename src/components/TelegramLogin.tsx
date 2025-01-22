@@ -23,11 +23,11 @@ const TelegramLogin: React.FC = () => {
         throw new Error('Failed to fetch user data');
       }
       const data = await response.json();
-      console.log('Data:', data.userData);
+      console.log('Data:', data.authData);
       if (data.success) {
-        setUserData(data.userData); // Получаем данные пользователя
+        setUserData(data.authData); // Получаем данные пользователя
       } else {
-        setError(data.message); // Если ошибка
+        setError(data.message || 'Unexpected error occurred'); // Если ошибка
       }
     } catch (err) {
       setError('Error fetching user data');
