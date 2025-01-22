@@ -35,11 +35,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log("Auth Data:", authData);
 
-    /*const dataCheckString = Object.keys(authData)
-      .sort() // Сортируем ключи по алфавиту
-      .map((key) => `${key}=${authData[key]}`) // Формат key=value
-      .join("\n");*/
-
     const keys = Object.keys(authData).sort();
 
     const dataCheckStrings: string[] = [];
