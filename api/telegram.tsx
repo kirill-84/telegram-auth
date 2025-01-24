@@ -69,9 +69,14 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     // Сравниваем HMAC с переданным хешем
     if (hmac === hash) {
       //res.status(200).json({ success: true, authData });
-      // Redirect to the main page with the user's data as query parameters
-      const queryParams = new URLSearchParams(authData).toString();
-      res.redirect(302, `/?${queryParams}`);
+      // Store the user's data in session storage
+      const script = `
+        <script>
+          sessionStorage.setItem('telegramAuthData', JSON.stringify(${JSON.stringify(authData)}));
+          window.location.href = '/';
+        </script>
+      `;
+      res.status(200).send(script);
     } else {
       res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
     }
