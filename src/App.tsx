@@ -10,15 +10,6 @@ function App() {
   const [userData, setUserData] = useState<any>(null); // State to store user data
   const [error, setError] = useState<string | null>(null); // State to store errors
 
-  // Retrieve user data from session storage on component mount
-  useEffect(() => {
-    const authData = sessionStorage.getItem('telegramAuthData');
-    if (authData) {
-      setUserData(JSON.parse(authData)); // Set the user data from session storage
-      sessionStorage.removeItem('telegramAuthData'); // Clear the data from session storage
-    }
-  }, []);
-
   // Callback function to handle successful authentication
   const handleAuth: TelegramLoginProps['onAuth'] = (authData) => {
     setUserData(authData); // Set the user data
