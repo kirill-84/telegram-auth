@@ -1,15 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import TelegramLogin from "./components/TelegramLogin.tsx"
+import { useState } from 'react';
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
+import './App.css';
+import TelegramLogin from './components/TelegramLogin';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  const [userData, setUserData] = useState<any>(null); // State to store user data
+  const [error, setError] = useState<string | null>(null); // State to store errors
+
+  // Callback function to handle successful authentication
+  const handleAuth = (authData: any) => {
+    setUserData(authData); // Set the user data
+    setError(null); // Clear any previous errors
+  };
+
+  // Callback function to handle errors
+  const handleError = (errorMessage: string) => {
+    setError(errorMessage); // Set the error message
+    setUserData(null); // Clear any previous user data
+  };
 
   return (
     <>
-      <TelegramLogin />
+      {/* Display user data if authenticated */}
+      {userData ? (
+        <div>
+          <h3>User Info:</h3>
+          <pre>{JSON.stringify(userData, null, 2)}</pre>
+        </div>
+      ) : (
+        // Display the Telegram login widget if not authenticated
+        <div>
+          <TelegramLogin onAuth={handleAuth} onError={handleError} />
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+        </div>
+      )}
+
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
@@ -33,7 +60,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
