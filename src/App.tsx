@@ -2,7 +2,8 @@ import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
-import TelegramLogin, { TelegramLoginProps } from './components/TelegramLogin';
+import TelegramLogin from './components/TelegramLogin';
+import { TelegramLoginProps } from './types'; // Import the interface 
 
 function App() {
   const [count, setCount] = useState(0);
