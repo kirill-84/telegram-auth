@@ -68,7 +68,10 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     // Сравниваем HMAC с переданным хешем
     if (hmac === hash) {
-      res.status(200).json({ success: true, authData });
+      //res.status(200).json({ success: true, authData });
+      // Redirect to the main page with the user's data as query parameters
+      const queryParams = new URLSearchParams(authData).toString();
+      res.redirect(302, `/?${queryParams}`);
     } else {
       res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
     }
