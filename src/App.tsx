@@ -10,13 +10,13 @@ function App() {
   const [error, setError] = useState<string | null>(null); // State to store errors
 
   // Callback function to handle successful authentication
-  const handleAuth = (authData: any) => {
+  const handleAuth: TelegramLoginProps['onAuth'] = (authData) => {
     setUserData(authData); // Set the user data
     setError(null); // Clear any previous errors
   };
 
   // Callback function to handle errors
-  const handleError = (errorMessage: string) => {
+  const handleError: TelegramLoginProps['onError'] = (errorMessage) => {
     setError(errorMessage); // Set the error message
     setUserData(null); // Clear any previous user data
   };
