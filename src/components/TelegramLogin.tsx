@@ -15,37 +15,17 @@ const TelegramLogin: React.FC<TelegramLoginProps> = ({ onAuth, onError }) => {
     script.setAttribute('data-size', 'large');
     script.setAttribute('data-auth-url', '/api/telegram'); // Endpoint to handle authentication
     script.setAttribute('data-request-access', 'write');
-    script.onload = () => {
-      (window as any).TelegramLoginWidget = {
-        onAuth: (user: any) => {
-          // Send the user data to your API for verification
-          fetch('/api/telegram', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(user),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.success) {
-                // Pass the user data to the parent component
-                onAuth(data.authData);
-              } else {
-                onError(data.message || 'Authentication failed');
-              }
-            })
-            .catch((err) => {
-              onError('Error during authentication');
-              console.error(err);
-            });
-        },
-      };
-    };
-    document.getElementById('telegram-login-container')?.appendChild(script);
+
+    const container = document.getElementById('telegram-login-container');
+    if (container) {
+      container.appendChild(script);
+    }
 
     return () => {
-      document.body.removeChild(script);
+      // Clean up the script when the component unmounts
+      if (container && container.contains(script)) {
+        container.removeChild(script);
+      }
     };
   }, [onAuth, onError]);
 
