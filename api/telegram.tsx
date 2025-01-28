@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
+import { sql } from "@vercel/postgres";
 
 const BOT_TOKEN = process.env.BOT_TOKEN as string; // Удаляем возможные лишние символы
 if (!BOT_TOKEN) {
@@ -68,6 +69,43 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     // Сравниваем HMAC с переданным хешем
     if (hmac === hash) {
+      const userId = parseInt(authData.id, 10);
+      const authDate = parseInt(authData.auth_date, 10);
+
+      if(isNaN(userId) || isNaN(authDate)) {
+        res.status(400).json({ success: false, message: "Invalid user data"});
+        return;
+      }
+
+      try {
+        const { rowCount } = await sql`SELECT id FROM users WHERE id = ${userId}`;
+        if (rowCount === 0) {
+          await sql`
+            INSERT INTO users (
+              id, 
+              first_name, 
+              last_name, 
+              username, 
+              photo_url, 
+              auth_date, 
+              hash
+            ) VALUES (
+              ${userId},
+              ${authData.first_name},
+              ${authData.last_name || null},
+              ${authData.username || null},
+              ${authData.photo_url || null},
+              ${authDate},
+              ${hash}
+            )
+          `;
+        }
+
+        res.status(200).json({ success: true, authData });
+      } catch (dbError){
+        console.error('Database error:', dbError);
+        res.status(500).json({ success: false, message: 'Database operation failed' });
+      }
       res.status(200).json({ success: true, authData });
     } else {
       res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
