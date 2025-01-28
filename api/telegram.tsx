@@ -100,7 +100,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           )
         `;
       }
-        
+
+      // Generate JWT
+      const token = jwt.sign({userId}, process.env.JWT_SECRET!, {expiresIn: '1d'});
+
+      // Set cookie
+      res.setHeader('Set-Cookie', [
+        `session=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${24 * 3600}`
+      ]);
+      
       res.status(200).json({ success: true, authData });
     } else {
       res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
