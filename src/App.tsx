@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 import TelegramLogin from './components/TelegramLogin';
+import { TelegramLoginProps } from './types'; // Import the interface 
 
 function App() {
   const [count, setCount] = useState(0);
@@ -19,11 +20,6 @@ function App() {
   const handleError: TelegramLoginProps['onError'] = (errorMessage) => {
     setError(errorMessage); // Set the error message
     setUserData(null); // Clear any previous user data
-  };
-
-  // Обработчик выхода
-  const handleLogout = () => {
-    setUserData(null);
   };
 
   return (
