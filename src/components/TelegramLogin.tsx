@@ -7,6 +7,18 @@ export interface TelegramLoginProps {
 
 const TelegramLogin: React.FC<TelegramLoginProps> = ({ onAuth, onError }) => {
   useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'telegram-auth') {
+        if (event.data.success) {
+          onAuth();
+        } else {
+          onError('Authorization failed');
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
