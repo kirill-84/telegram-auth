@@ -100,20 +100,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         `;
       }
         
-      //res.status(200).json({ success: true, authData });
-      // Отправка ответа с редиректом
-      res.setHeader('Content-Type', 'text/html');
-      res.send(`
-        <html>
-          <script>
-            window.opener.postMessage({
-              type: 'telegram-auth',
-              data: ${JSON.stringify(authData)}
-            }, window.location.origin);
-            window.close();
-          </script>
-        </html>
-      `);
+      res.status(200).json({ success: true, authData });
     } else {
       res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
     }
