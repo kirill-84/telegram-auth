@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
 import { sql } from "@vercel/postgres";
+import jwt from 'jsonwebtoken';
 
 const BOT_TOKEN = process.env.BOT_TOKEN as string; // Удаляем возможные лишние символы
 if (!BOT_TOKEN) {
