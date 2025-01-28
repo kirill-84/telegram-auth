@@ -26,9 +26,14 @@ function App() {
     <>
       {/* Display user data if authenticated */}
       {userData ? (
-        <div>
-          <h3>User Info:</h3>
-          <pre>{JSON.stringify(userData, null, 2)}</pre>
+        <div className="user-info">
+          <h3>User Info</h3>
+          {userData.photo_url && (
+            <img src={userData.photo_url} alt="Profile" className="profile-photo" />
+          )}
+          <p>ID: {userData.id}</p>
+          <p>Name: {userData.first_name} {userData.last_name}</p>
+          <p>Username: @{userData.username}</p>
         </div>
       ) : (
         // Display the Telegram login widget if not authenticated
