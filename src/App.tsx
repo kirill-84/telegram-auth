@@ -22,6 +22,11 @@ function App() {
     setUserData(null); // Clear any previous user data
   };
 
+  // Обработчик выхода
+  const handleLogout = () => {
+    setUserData(null);
+  };
+
   return (
     <>
       {/* Display user data if authenticated */}
@@ -35,6 +40,7 @@ function App() {
           <p>Name: {userData.first_name} {userData.last_name}</p>
           <p>Username: @{userData.username}</p>
         </div>
+        <div className="user-panel"><button onclick={handleLogout} className="logout-button">Выйти</button></div>
       ) : (
         // Display the Telegram login widget if not authenticated
         <div>
