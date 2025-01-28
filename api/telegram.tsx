@@ -51,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     const dataCheckString = dataCheckStrings.join('\n');
 
-    console.log("Data Check String:", dataCheckString);
+    //console.log("Data Check String:", dataCheckString);
 
     // Генерация HMAC-SHA-256
     const secretKey = crypto
@@ -64,8 +64,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .update(dataCheckString)
       .digest("hex");
 
-    console.log("Computed HMAC:", hmac);
-    console.log("Provided Hash:", hash);
+    //console.log("Computed HMAC:", hmac);
+    //console.log("Provided Hash:", hash);
 
     // Сравниваем HMAC с переданным хешем
     if (hmac === hash) {
