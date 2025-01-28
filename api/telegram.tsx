@@ -7,7 +7,7 @@ if (!BOT_TOKEN) {
   throw new Error("BOT_TOKEN is not defined in environment variables");
 }
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
     res.status(405).json({ success: false, message: "Method Not Allowed" });
     return;
@@ -77,35 +77,29 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
 
-      try {
-        const { rowCount } = await sql`SELECT id FROM users WHERE id = ${userId}`;
-        if (rowCount === 0) {
-          await sql`
-            INSERT INTO users (
-              id, 
-              first_name, 
-              last_name, 
-              username, 
-              photo_url, 
-              auth_date, 
-              hash
-            ) VALUES (
-              ${userId},
-              ${authData.first_name},
-              ${authData.last_name || null},
-              ${authData.username || null},
-              ${authData.photo_url || null},
-              ${authDate},
-              ${hash}
-            )
-          `;
-        }
-
-        res.status(200).json({ success: true, authData });
-      } catch (dbError){
-        console.error('Database error:', dbError);
-        res.status(500).json({ success: false, message: 'Database operation failed' });
+      const { rowCount } = await sql`SELECT id FROM users WHERE id = ${userId}`;
+      if (rowCount === 0) {
+        await sql`
+          INSERT INTO users (
+            id, 
+            first_name, 
+            last_name, 
+            username, 
+            photo_url, 
+            auth_date, 
+            hash
+          ) VALUES (
+            ${userId},
+            ${authData.first_name},
+            ${authData.last_name || null},
+            ${authData.username || null},
+            ${authData.photo_url || null},
+            ${authDate},
+            ${hash}
+          )
+        `;
       }
+        
       res.status(200).json({ success: true, authData });
     } else {
       res.status(401).json({ success: false, message: "Authentication failed. HMAC does not match hash." });
