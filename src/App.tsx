@@ -38,7 +38,6 @@ function App() {
           <p>ID: {userData.id}</p>
           <p>Name: {userData.first_name} {userData.last_name}</p>
           <p>Username: @{userData.username}</p>
-          <button onclick={handleLogout} className="logout-button">Выйти</button>
         </div>
       ) : (
         // Display the Telegram login widget if not authenticated
