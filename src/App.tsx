@@ -61,7 +61,7 @@ function App() {
         </p>
       </div>
       <p className="read-the-docs">
-        For inspiration &hearts;: 0x1266a05165458ce7b2C120FB744887f40eca6d63 | Ethereum
+        For inspiration: 0x1266a05165458ce7b2C120FB744887f40eca6d63 | Ethereum &hearts;
       </p>
     </>
   );
