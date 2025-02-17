@@ -8,7 +8,7 @@ export interface TelegramLoginProps {
 const TelegramLogin: React.FC<TelegramLoginProps> = ({ onAuth, onError }) => {
   useEffect(() => {
     const script = document.createElement('script');
-    const BOT_NAME = process.env.BOT_NAME as string;
+    const BOT_NAME = process.env.BOT_NAME;
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
     script.setAttribute('data-telegram-login', BOT_NAME); // Replace with your bot username
