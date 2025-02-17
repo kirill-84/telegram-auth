@@ -11,7 +11,7 @@ const TelegramLogin: React.FC<TelegramLoginProps> = ({ onAuth, onError }) => {
     const BOT_NAME = process.env.BOT_NAME as string;
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
-    script.setAttribute('data-telegram-login', BOT_NAME); // Replace with your bot username
+    script.setAttribute('data-telegram-login', "BOT_NAME"); // Replace with your bot username
     script.setAttribute('data-size', 'large');
     script.setAttribute('data-auth-url', '/api/telegram'); // Endpoint to handle authentication
     script.setAttribute('data-request-access', 'write');
