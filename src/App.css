@@ -72,5 +72,6 @@
 }
 
 .cursor-pointer {
+  vertical-align: text-top;
   cursor: pointer;
 }
