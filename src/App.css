@@ -66,3 +66,11 @@
 .read-the-docs {
   color: #888;
 }
+
+.inline-block {
+  display: inline-block;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
